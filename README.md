@@ -13,10 +13,11 @@ Cloudflare protects websites by hiding their real server IP addresses. However, 
 
 This tool helps you:
 
-- Scan common subdomains for a given domain.
+- Load subdomain names from a custom wordlist (`subdomains.txt`)
 - Resolve each subdomain's IP address.
-- Determine whether the IP is protected by Cloudflare or exposed.
+- Determine whether the IP is protected by Cloudflare.
 - Scan open ports on exposed IPs using `masscan`.
+- Detect services and versions on those ports using `nmap`.
 - Generate a full HTML report (RTL + Hebrew support).
 
 ---
@@ -33,7 +34,7 @@ pip install dnspython jinja2 requests
 
 # 🔹 Install system tools
 sudo apt install masscan      # For fast port scanning
-sudo apt install nmap         # (Optional) For advanced service detection
+sudo apt install nmap         # For service detection
 ```
 
 ---
@@ -41,30 +42,32 @@ sudo apt install nmap         # (Optional) For advanced service detection
 ## 🚀 How to Run the Scanner
 
 ```bash
-python3 cloudflare_scanner.py
+python3 cloudflare_scanner_advanced_with_wordlist.py
 ```
 
-You will be prompted to enter a domain (e.g., `example.com`).
+You will be prompted to enter a domain (e.g., `example.com`).  
+Make sure you have a file named `subdomains.txt` in the same directory containing subdomain names to test.
 
-What happens next:
-1. Common subdomains are resolved to IP addresses.
-2. Each IP is checked to see if it’s protected by Cloudflare.
-3. If the IP is exposed, it is scanned with `masscan` for open ports.
-4. A styled HTML report in Hebrew is saved as `report.html`.
+What happens:
+1. Each subdomain in `subdomains.txt` is checked.
+2. IPs are resolved.
+3. Each IP is tested if it's behind Cloudflare.
+4. If exposed, scanned with `masscan` and then `nmap`.
+5. Results are saved in a styled HTML report: `report.html`.
 
 ---
 
 ## 📁 Output Example (HTML Report)
 
-| Subdomain           | IP Address     | Cloudflare Protected | Open Ports    |
-|---------------------|----------------|-----------------------|---------------|
-| www.example.com      | 104.21.35.34   | ✅ Yes                | -             |
-| cpanel.example.com   | 198.51.100.20  | ❌ No                 | 80, 443, 22   |
+| Subdomain           | IP Address     | Cloudflare Protected | Open Ports    | Nmap Output |
+|---------------------|----------------|-----------------------|---------------|-------------|
+| www.example.com      | 104.21.35.34   | ✅ Yes                | -             | Protected   |
+| cpanel.example.com   | 198.51.100.20  | ❌ No                 | 80, 443, 22   | Shown in report |
 
 The `report.html` file is:
 - Fully RTL (Hebrew) and printable
 - Color-coded for safety (green = safe, red = leak)
-- Can be opened in any modern browser
+- Shows port and service info in detail
 
 ---
 
@@ -82,7 +85,6 @@ The layout is clean, mobile-friendly, and designed for RTL Hebrew use.
 
 ## 🔧 Future Features (Ideas)
 
-- Use `nmap -sV` to detect services and versions on leaked IPs.
 - Add CSV and PDF export options.
 - Historical DNS leak check via APIs (e.g., SecurityTrails, Censys).
 - CLI flags for automation:

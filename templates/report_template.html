@@ -7,10 +7,11 @@
         body { font-family: sans-serif; direction: rtl; background: #f9f9f9; padding: 20px; }
         h1 { color: #333; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; vertical-align: top; }
         th { background: #eee; }
         .leak { background: #fdd; }
         .safe { background: #dfd; }
+        pre { text-align: left; direction: ltr; background: #eee; padding: 10px; border-radius: 5px; overflow-x: auto; max-height: 200px; }
     </style>
 </head>
 <body>
@@ -21,6 +22,7 @@
             <th>IP</th>
             <th>סטטוס</th>
             <th>פורטים פתוחים</th>
+            <th>פלט nmap</th>
         </tr>
         {% for item in results %}
         <tr class="{{ 'leak' if not item.behind_cf else 'safe' }}">
@@ -28,6 +30,7 @@
             <td>{{ item.ip }}</td>
             <td>{{ 'מוגן' if item.behind_cf else 'דליפה!' }}</td>
             <td>{{ item.ports | join(', ') if item.ports else '-' }}</td>
+            <td><pre>{{ item.nmap_result }}</pre></td>
         </tr>
         {% endfor %}
     </table>
