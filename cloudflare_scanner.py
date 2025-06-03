@@ -6,11 +6,16 @@ import json
 from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
 
-# List of common subdomains to check
-COMMON_SUBDOMAINS = [
-    "www", "mail", "ftp", "direct", "server", "cpanel", "webmail",
-    "ns1", "ns2", "admin", "dev", "test", "api", "origin"
-]
+# Load subdomains from a txt file
+def load_subdomains_from_file(filepath="subdomains.txt"):
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            lines = [line.strip() for line in f if line.strip()]
+        print(f"📄 Loaded {len(lines)} subdomains from {filepath}")
+        return lines
+    except FileNotFoundError:
+        print(f"⚠️ File {filepath} not found. Using default list.")
+        return []
 
 # Resolve subdomain to IP address
 def resolve_subdomain(domain, subdomain):
@@ -64,9 +69,10 @@ def generate_report(domain, results):
 
 def main():
     domain = input("🔍 Enter a domain to scan (e.g., example.com): ").strip()
+    subdomains = load_subdomains_from_file()
     final_results = []
 
-    for sub in COMMON_SUBDOMAINS:
+    for sub in subdomains:
         ips = resolve_subdomain(domain, sub)
         for ip in ips:
             behind_cf = is_behind_cloudflare(ip)
