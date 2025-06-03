@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <title>דוח בדיקת דליפות Cloudflare</title>
+    <style>
+        body { font-family: sans-serif; direction: rtl; background: #f9f9f9; padding: 20px; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background: #eee; }
+        .leak { background: #fdd; }
+        .safe { background: #dfd; }
+    </style>
+</head>
+<body>
+    <h1>דוח בדיקת דליפות Cloudflare עבור {{ domain }}</h1>
+    <table>
+        <tr>
+            <th>תת־דומיין</th>
+            <th>IP</th>
+            <th>סטטוס</th>
+            <th>פורטים פתוחים</th>
+        </tr>
+        {% for item in results %}
+        <tr class="{{ 'leak' if not item.behind_cf else 'safe' }}">
+            <td>{{ item.subdomain }}</td>
+            <td>{{ item.ip }}</td>
+            <td>{{ 'מוגן' if item.behind_cf else 'דליפה!' }}</td>
+            <td>{{ item.ports | join(', ') if item.ports else '-' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
